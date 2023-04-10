@@ -1,7 +1,6 @@
 # pokemon Compose
 
-项目采用单Activity+ComposeNavigation进行路由跳转，
-
+一个使用Jetpack Compose编写的宝可梦图鉴，项目采用单Activity+ComposeNavigation进行路由跳转，
 接口数据来源于[pokeapi](https://pokeapi.co/)
 
 # 主要参考项目
