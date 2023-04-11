@@ -27,13 +27,11 @@ fun CommonNetworkImage(
     colorFilter: ColorFilter? = null,
     transformations: List<Transformation>? = null
 ) {
-
     val modelBuilder = ImageRequest.Builder(LocalContext.current)
         .data(url ?: "")
         .crossfade(false)
         .allowHardware(allowHardware)
         .transformations()
-
 
     if (placeholder != -1) {
         modelBuilder.placeholder(placeholder)

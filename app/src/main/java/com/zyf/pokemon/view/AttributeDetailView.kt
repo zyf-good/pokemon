@@ -33,155 +33,155 @@ import com.zyf.pokemon.view.commond.CommonNetworkImage
 import com.zyf.pokemon.viewmodels.PokemonStatsViewModel
 import java.util.*
 
-/**
- * @author zengyifeng
- * @date createDate:2023-04-08
- * @brief description 属性详情页
- */
+
 @Composable
 fun AttributeDetailView(item: PokemonResult) {
-        val modifier = Modifier
-        val state = rememberLazyGridState()
-        val vm: PokemonStatsViewModel = hiltViewModel()
-        val entity = remember {
-            mutableStateOf(SinglePokemonResponse(Sprites(), emptyList(), 0, 0))
-        }
-        val showLoading = remember {
-            mutableStateOf(true)
-        }
+    val modifier = Modifier
+    val state = rememberLazyGridState()
+    val vm: PokemonStatsViewModel = hiltViewModel()
+    val entity = remember {
+        mutableStateOf(SinglePokemonResponse(Sprites(), emptyList(), 0, 0))
+    }
+    val showLoading = remember {
+        mutableStateOf(true)
+    }
 
-        LaunchedEffect(key1 = item) {
-            vm.getSinglePokemon(item.url).collect {
-                when (it) {
-                    is NetworkResource.Success -> {
-                        showLoading.value = false
-                        entity.value = it.value
-                    }
-                    is NetworkResource.Failure -> {
-                        showToast("There was an error loading the pokemon")
-                    }
-                    is NetworkResource.Loading -> {
-                        showLoading.value = true
-                    }
-                    else -> {}
+    LaunchedEffect(key1 = item) {
+        vm.getSinglePokemon(item.url).collect {
+            when (it) {
+                is NetworkResource.Success -> {
+                    showLoading.value = false
+                    entity.value = it.value
                 }
+                is NetworkResource.Failure -> {
+                    showToast("There was an error loading the pokemon")
+                }
+                is NetworkResource.Loading -> {
+                    showLoading.value = true
+                }
+                else -> {}
             }
         }
+    }
 
 
-        Column(modifier = modifier.fillMaxSize()) {
-            Spacer(
-                modifier = Modifier
-                    .padding(top = 100.cdp)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(item.backgroundColor))
+    ) {
+        Spacer(
+            modifier = Modifier
+                .padding(top = 100.cdp)
+        )
+
+        ConstraintLayout(
+            modifier = modifier
+                .weight(1f)
+                .fillMaxSize()
+        ) {
+            val (backBtn, name, pic, metres, kgs) = createRefs()
+
+            Icon(
+                painter = painterResource(R.drawable.breake),
+                contentDescription = null,
+                modifier = modifier
+                    .size(70.cdp)
+                    .padding(start = 10.cdp)
+                    .clickable {
+                        NavController.instance.popBackStack()
+                    }
+                    .constrainAs(backBtn) {},
+                tint = Color.White
             )
 
-            ConstraintLayout(
+            Text(text = item.name,
+                modifier
+                    .constrainAs(name) {
+                        top.linkTo(parent.top)
+                        start.linkTo(backBtn.end)
+                    }
+                    .padding(start = 60.cdp),
+                fontSize = 50.csp,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
+                color = Color.White)
+
+            CommonNetworkImage(url = item.url.getPicUrl(),
                 modifier = modifier
-                    .weight(1f)
-                    .fillMaxSize()
-            ) {
-                val (backBtn, name, pic, metres, kgs) = createRefs()
+                    .constrainAs(pic) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .size(200.cdp))
+            Text(text = entity.value.height.div(10.0).toString() + " metres",
+                modifier
+                    .constrainAs(metres) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .padding(start = 30.cdp, bottom = 10.cdp),
+                fontSize = 50.csp,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
+                color = Color.White)
 
-                Icon(
-                    painter = painterResource(R.drawable.breake),
-                    contentDescription = null,
-                    modifier = modifier
-                        .size(70.cdp)
-                        .padding(start = 10.cdp)
-                        .clickable {
-                            NavController.instance.popBackStack()
-                        }
-                        .constrainAs(backBtn) {},
-                    tint = Color.White
-                )
+            Text(text = entity.value.weight.div(10.0).toString() + " kgs",
+                modifier
+                    .constrainAs(kgs) {
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    }
+                    .padding(end = 30.cdp, bottom = 10.cdp),
+                fontSize = 50.csp,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
+                color = Color.White)
 
-                Text(text = item.name,
-                    modifier
-                        .constrainAs(name) {
-                            top.linkTo(parent.top)
-                            start.linkTo(backBtn.end)
-                        }
-                        .padding(start = 60.cdp),
-                    fontSize = 50.csp,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White)
-
-                CommonNetworkImage(url = item.url.getPicUrl(),
-                    modifier = modifier
-                        .constrainAs(pic) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                        .size(200.cdp))
-                Text(text = entity.value.height.div(10.0).toString() + " metres",
-                    modifier
-                        .constrainAs(metres) {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                        }
-                        .padding(start = 30.cdp, bottom = 10.cdp),
-                    fontSize = 50.csp,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White)
-
-                Text(text = entity.value.weight.div(10.0).toString() + " kgs",
-                    modifier
-                        .constrainAs(kgs) {
-                            bottom.linkTo(parent.bottom)
-                            end.linkTo(parent.end)
-                        }
-                        .padding(end = 30.cdp, bottom = 10.cdp),
-                    fontSize = 50.csp,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White)
-
+        }
+        Column(
+            modifier = modifier
+                .weight(3f)
+                .background(Color.White)
+                .fillMaxSize()
+                .padding(30.cdp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Base Stats",
+                modifier.padding(start = 30.cdp, bottom = 10.cdp),
+                fontSize = 50.csp,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            if (showLoading.value) {
+                CommonCircularProgress()
             }
-            Column(
-                modifier = modifier
-                    .weight(3f)
-                    .background(Color.White)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                state = state,
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(30.cdp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentPadding = PaddingValues(14.cdp, 0.cdp, 14.cdp, 80.cdp),
+                verticalArrangement = Arrangement.spacedBy(40.cdp),
+                horizontalArrangement = Arrangement.spacedBy(30.cdp)
             ) {
-                Text(
-                    text = "Base Stats",
-                    modifier.padding(start = 30.cdp, bottom = 10.cdp),
-                    fontSize = 50.csp,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                if (showLoading.value) {
-                    CommonCircularProgress()
-                }
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    state = state,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(30.cdp),
-                    contentPadding = PaddingValues(14.cdp, 0.cdp, 14.cdp, 80.cdp),
-                    verticalArrangement = Arrangement.spacedBy(40.cdp),
-                    horizontalArrangement = Arrangement.spacedBy(30.cdp)
-                ) {
 
-                    items(count = entity.value.stats.size) { count ->
-                        val item = entity.value.stats[count]
-                        AttributeDetailItemView(item, modifier)
-                    }
+                items(count = entity.value.stats.size) { count ->
+                    val item = entity.value.stats[count]
+                    AttributeDetailItemView(item, modifier)
                 }
-
             }
 
         }
 
     }
+
+}
 
 
 @Composable

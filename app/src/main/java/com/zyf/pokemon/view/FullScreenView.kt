@@ -2,8 +2,11 @@ package com.zyf.pokemon.view
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,20 +16,24 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.palette.graphics.Palette
+import coil.compose.AsyncImage
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.google.gson.Gson
 import com.zyf.electronicwoodfish.nav.RouterUrls
 import com.zyf.pokemon.R
@@ -36,7 +43,6 @@ import com.zyf.pokemon.utils.TwoBackFinish
 import com.zyf.pokemon.utils.cdp
 import com.zyf.pokemon.utils.getPicUrl
 import com.zyf.pokemon.view.commond.CommonCircularProgress
-import com.zyf.pokemon.view.commond.CommonNetworkImage
 import com.zyf.pokemon.viewmodels.PokemonListViewModel
 import java.util.*
 
@@ -48,6 +54,7 @@ import java.util.*
  */
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun FullScreenView(context: Context) {
     val vm: PokemonListViewModel = hiltViewModel()
@@ -117,8 +124,26 @@ fun FullScreenView(context: Context) {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ItemView(item: PokemonResult) {
+    var backgroundColor by remember { mutableStateOf(0) }
+    var context = LocalContext.current
+    val modelBuilder = ImageRequest.Builder(context).data(item.url.getPicUrl()).crossfade(false)
+        .allowHardware(false).transformations().placeholder(R.drawable.ic_pokeball)
+        .error(R.drawable.ic_pokeball)
+
+
+    LaunchedEffect(modelBuilder.build()) {
+        val bitmap = context.imageLoader.execute(modelBuilder.build()).drawable?.toBitmap(
+            config = Bitmap.Config.RGBA_F16
+        )
+        bitmap?.let {
+            val palette = Palette.from(bitmap).generate()
+            backgroundColor = palette.getDominantColor(0)
+        }
+    }
+
     Column(
         Modifier
             .width(150.cdp)
@@ -127,6 +152,7 @@ fun ItemView(item: PokemonResult) {
                 colorResource(R.color.white), shape = RoundedCornerShape(16.cdp)
             )
             .clickable {
+                item.backgroundColor = backgroundColor
                 val json = Uri.encode(Gson().toJson(item))
                 NavController.instance.navigate("${RouterUrls.AttributeDetailView}/$json")
             }) {
@@ -136,24 +162,22 @@ fun ItemView(item: PokemonResult) {
                 .height(220.cdp)
                 .align(alignment = Alignment.CenterHorizontally)
                 .background(
-                    colorResource(R.color.yellow),
+                    color = Color(backgroundColor),
                     shape = RoundedCornerShape(topStart = 16.cdp, topEnd = 16.cdp)
-                ),
-            contentAlignment = Alignment.Center
+                ), contentAlignment = Alignment.Center
         ) {
             Spacer(modifier = Modifier.height(10.cdp))
-            CommonNetworkImage(
-                url = item.url.getPicUrl(),
+            AsyncImage(
+                model = modelBuilder.build(),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(210.cdp)
-                    .height(210.cdp)
-                    ,
-                allowHardware = true,
+                    .height(210.cdp),
             )
         }
         Text(
-            text = item.name
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+            text = item.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
                 .padding(top = 16.cdp, bottom = 16.cdp)
