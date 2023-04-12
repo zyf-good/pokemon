@@ -60,12 +60,16 @@ fun FullScreenView(context: Context) {
     val searchString = rememberSaveable {
         mutableStateOf("")
     }
+    val searchOldString = rememberSaveable {
+        mutableStateOf("")
+    }
 
     var list: LazyPagingItems<PokemonResult>? = null
-    list = if (vm.currentResult != null) {
+    list = if (vm.currentResult != null&& searchString.value==searchOldString.value) {
         vm.currentResult!!.collectAsLazyPagingItems()
     } else {
-        vm.getPokemon(searchString.value).collectAsLazyPagingItems()
+        searchOldString.value = searchString.value
+        vm.getPokemon(searchOldString.value).collectAsLazyPagingItems()
     }
 
     val state: LazyGridState = rememberLazyGridState()
@@ -86,7 +90,7 @@ fun FullScreenView(context: Context) {
                 contentDescription = "搜索"
             )
         }, modifier = Modifier
-            .height(103.cdp)
+            .height(113.cdp)
             .focusTarget()
             .background(
                 Color.White, RoundedCornerShape(16.cdp)

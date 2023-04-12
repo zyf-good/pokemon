@@ -1,5 +1,7 @@
 package com.zyf.pokemon.view
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -46,6 +48,10 @@ fun AttributeDetailView(item: PokemonResult) {
         mutableStateOf(true)
     }
 
+    BackHandler {
+
+    }
+
     LaunchedEffect(key1 = item) {
         vm.getSinglePokemon(item.url).collect {
             when (it) {
@@ -88,7 +94,7 @@ fun AttributeDetailView(item: PokemonResult) {
                     .size(70.cdp)
                     .padding(start = 10.cdp)
                     .clickable {
-                        NavController.instance.popBackStack()
+                        NavController.instance.navigateUp()
                     }
                     .constrainAs(backBtn) {},
                 tint = Color.White
