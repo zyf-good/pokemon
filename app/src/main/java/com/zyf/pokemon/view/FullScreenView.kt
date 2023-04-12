@@ -42,7 +42,6 @@ import com.zyf.pokemon.nav.NavController
 import com.zyf.pokemon.utils.TwoBackFinish
 import com.zyf.pokemon.utils.cdp
 import com.zyf.pokemon.utils.getPicUrl
-import com.zyf.pokemon.view.commond.CommonCircularProgress
 import com.zyf.pokemon.viewmodels.PokemonListViewModel
 import java.util.*
 
@@ -96,9 +95,6 @@ fun FullScreenView(context: Context) {
         Spacer(
             modifier = Modifier.padding(top = 10.cdp)
         )
-        if (list == null) {
-            CommonCircularProgress()
-        }
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             state = state,
@@ -128,7 +124,7 @@ fun FullScreenView(context: Context) {
 @Composable
 fun ItemView(item: PokemonResult) {
     var backgroundColor by remember { mutableStateOf(0) }
-    var context = LocalContext.current
+    val context = LocalContext.current
     val modelBuilder = ImageRequest.Builder(context).data(item.url.getPicUrl()).crossfade(false)
         .allowHardware(false).transformations().placeholder(R.drawable.ic_pokeball)
         .error(R.drawable.ic_pokeball)

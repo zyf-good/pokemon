@@ -59,7 +59,6 @@ fun AttributeDetailView(item: PokemonResult) {
                 is NetworkResource.Loading -> {
                     showLoading.value = true
                 }
-                else -> {}
             }
         }
     }
@@ -185,7 +184,7 @@ fun AttributeDetailView(item: PokemonResult) {
 
 
 @Composable
-fun AttributeDetailItemView(stat: Stats, modifier: Modifier.Companion) {
+fun AttributeDetailItemView(stat: Stats, modifier: Modifier) {
 
     CommonAttributeCircularProgress(
         modifier = modifier, content = stat.stat.name.replaceFirstChar {
