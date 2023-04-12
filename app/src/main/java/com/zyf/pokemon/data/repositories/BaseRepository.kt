@@ -7,9 +7,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 
-/**
- *created by Ronnie Otieno on 13-Feb-21.
- **/
+
 open class BaseRepository {
     suspend fun <T> safeApiCall(
         apiCall: suspend () -> T

@@ -4,9 +4,7 @@ import android.app.Activity
 import android.view.View
 import androidx.core.view.WindowCompat
 
-/**
- * Created by ssk on 2022/4/17.
- */
+
 
 /**
  * 设置为沉浸式状态栏

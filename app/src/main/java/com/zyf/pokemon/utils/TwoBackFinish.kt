@@ -1,8 +1,6 @@
 package com.zyf.pokemon.utils
 
-/**
- * Created by ssk on 2022/4/17.
- */
+
 class TwoBackFinish {
     companion object {
         var mExitTime: Long = 0

@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-/**
- *created by Ronnie Otieno on 20-Dec-20.
- **/
+
 
 @HiltViewModel
 class PokemonListViewModel @Inject constructor(
